@@ -153,17 +153,17 @@ const seed = new BitString();
 for (let i = 0; i < 8 * 20; i++) {
   seed.addBit(Math.random() > 0.5 ? 1 : 0);
 }
-const myComp = new Composition(0.9, 0.9, TimePeriod.Present, seed);
-const pSong = new PsuedoSong(myComp);
-(window as any).pSong = pSong;
 
 window.onload = function() {
     const context = new AudioContext();
-    console.log(context);
     // One-liner to resume playback when user interacted with the page.
-    (document as any).querySelector('button').addEventListener('click', function() {
+    (document as any).querySelector('button').addEventListener('click', () => {
         context.resume().then(() => {
         console.log('Playback resumed successfully');
+        const arousal = parseFloat((document as any).querySelector('#Arousal').value);
+        const valence = parseFloat((document as any).querySelector('#Valence').value);
+        const myComp = new Composition(arousal, valence, TimePeriod.Present, seed);
+        const pSong = new PsuedoSong(myComp);
         mgs.playSong(pSong as any);
         });
     });

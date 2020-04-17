@@ -1,24 +1,33 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
+    "strict": true,
     "sourceMap": true,
     "declaration": false,
-    "module": "es2015",
+    "target": "es2019",
+    "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es5",
-    "strict": true,
+    "baseUrl": ".",
+    "rootDir": "./src",
     "typeRoots": [
       "node_modules/@types",
-      "src/types"
+      "types"
     ],
     "lib": [
       "es2018",
       "dom"
     ]
-  }
+  },
+  "include": [
+    "src/**/*",
+    "types/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
 }

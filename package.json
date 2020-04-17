@@ -2,7 +2,8 @@
   "name": "expert-music-generator",
   "version": "0.0.0",
   "scripts": {
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js",
+    "test": "mocha -r ts-node/register ./src/**/*.spec.ts"
   },
   "private": true,
   "dependencies": {

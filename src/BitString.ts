@@ -50,7 +50,7 @@ export class BitString {
    */
   public mutate(mutationChance: number) {
     if (mutationChance < 0 || mutationChance > 1) {
-      throw new Error('Mutation chance is not a valid probability');
+      throw new Error("Mutation chance is not a valid probability");
     }
     for (let i = 0; i < this.data.length; i++) {
       if (Math.random() < mutationChance) {
@@ -69,7 +69,7 @@ export class BitString {
   public crossover(bitstring: BitString, points: number = 1) {
     const size = Math.min(bitstring.data.length, this.data.length);
     if (points < 1 || points >= size) {
-      throw new Error('Invalid number of crossover points');
+      throw new Error("Invalid number of crossover points");
     }
 
     const crossoverPoints = new Set<number>();
@@ -98,7 +98,7 @@ export class BitString {
 
 
   public toString() {
-    return this.data.map(bit => bit.toString()).join('');
+    return this.data.map(bit => bit.toString()).join("");
   }
 
   public addBit(bit: 0 | 1) {
@@ -108,9 +108,9 @@ export class BitString {
   public fromString(str: string) {
     this.data = [];
     for (const char of str) {
-      if (char === '1') {
+      if (char === "1") {
         this.data.push(1);
-      } else if (char === '0') {
+      } else if (char === "0") {
         this.data.push(0);
       }
     }

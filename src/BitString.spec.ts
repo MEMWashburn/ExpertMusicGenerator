@@ -1,4 +1,3 @@
-// TODO: fix tests
 import { BitString } from "./BitString";
 import { expect } from "chai";
 

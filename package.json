@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "test": "mocha -r ts-node/register ./src/**/*.spec.ts"
+    "test": "mocha -r ts-node/register './src/**/*.spec.ts'"
   },
   "private": true,
   "dependencies": {
@@ -18,7 +18,7 @@
   "devDependencies": {
     "@types/chai": "^4.2.11",
     "@types/mocha": "^7.0.2",
-    "@types/node": "~8.9.4",
+    "@types/node": "^8.9.5",
     "@types/tone": "git://github.com/Tonejs/TypeScript.git",
     "@types/uuid": "^3.4.4",
     "chai": "^4.2.0",

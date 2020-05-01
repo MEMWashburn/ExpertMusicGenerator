@@ -150,11 +150,12 @@ class PsuedoSong {
 const mgs = new MusicGeneratorService();
 (window as any).mgs = mgs;
 const seed = new BitString();
-for (let i = 0; i < 8 * 20; i++) {
+for (let i = 0; i < 8 * 47; i++) {
   seed.addBit(Math.random() > 0.5 ? 1 : 0);
 }
+console.log("# of bytes in seed: " + seed.toByteArray().length);
 
-window.onload = function() {
+window.onload = () => {
     const context = new AudioContext();
     // One-liner to resume playback when user interacted with the page.
     (document as any).querySelector('button').addEventListener('click', () => {

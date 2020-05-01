@@ -39,6 +39,8 @@ export class NumberGenerator {
 export class BitString {
   private data: Array<0 | 1> = [];
 
+  // TODO: static function to random generate bitstring
+
   constructor(str?: string) {
     if (str) {
       this.fromString(str);

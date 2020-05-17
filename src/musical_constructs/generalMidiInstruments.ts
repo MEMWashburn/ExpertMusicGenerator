@@ -2393,4 +2393,6 @@ export const GMInstruments = Object.freeze({
     },
   },
 });
-// console.log(GMInstruments.byCategory.piano.clavinet.id);
+
+// TODO: Should this be packaged as a json.parse(string) at compile??
+// console.log(JSON.stringify(GMInstruments));

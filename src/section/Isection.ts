@@ -1,13 +1,17 @@
+import { NoteDuration } from "src/musical_constructs";
+import { TNote } from "src/musical_constructs";
+
 /**
  * ISection describes classes that represent a portion of a song.
  * A section would handle all voices' rhythm and note pattern for its duration.
  * It returns an array of notes for each voice.
  */
 export interface ISection {
+  getNotes(voicesMask?: {
+    [key: string]: boolean;
+  }): { [key: string]: TNote[] };
   /**
-   * Creates the midi data from the generated song composition
-   * @param name optional name of the midi song data
-   * @return base64 string representation of midi data
+   * Gets the full duration of the section
    */
-  createMidiData(name?: string): string;
+  getDuration(): NoteDuration | NoteDuration[];
 }

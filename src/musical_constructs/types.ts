@@ -1,5 +1,7 @@
+import { NoteDuration } from './duration';
+
 // Used to help create more JS friendly enums
-type EnumLiteralsOf<T extends object> = T[keyof T];
+export type EnumLiteralsOf<T extends object> = T[keyof T];
 // Helper for custom numerical types that are a subset of all numbers
 const numLitArray = <N extends number>(arr: N[]) => arr;
 const stringLitArray = <L extends string>(arr: L[]) => arr;
@@ -28,3 +30,15 @@ export type Octave = (typeof octaves)[number];
 // typecheck
 export const isOctave = (x: any): x is Octave => octaves.indexOf(x) !== -1;
 
+export interface TNote {
+  octave: Octave;
+  pitch: PitchClass;
+  duration: NoteDuration;
+}
+
+// let temp: number;
+// temp = Math.random() > 0.5 ? 1 : 23;
+// let myOctave: Octave;
+// if (isOctave(temp)) {
+//   myOctave = temp;
+// }

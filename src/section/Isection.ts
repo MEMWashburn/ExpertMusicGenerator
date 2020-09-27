@@ -1,17 +1,17 @@
 import { NoteDuration } from "src/musical_constructs";
-import { TNote } from "src/musical_constructs";
+import { Mark } from "src/musical_constructs";
 
 /**
- * ISection describes classes that represent a portion of a song.
+ * ISection describes classes that represent a vertical portion of a song composition.
  * A section would handle all voices' rhythm and note pattern for its duration.
- * It returns an array of notes for each voice.
+ * It returns an array of Marks for each voice.
  */
 export interface ISection {
-  getNotes(voicesMask?: {
+  getMarks(voicesMask?: {
     [key: string]: boolean;
-  }): { [key: string]: TNote[] };
+  }): { [key: string]: Mark[] };
   /**
-   * Gets the full duration of the section
+   * Gets the full duration of each voice
    */
-  getDuration(): NoteDuration | NoteDuration[];
+  getDurations(): {[key: string]: NoteDuration | NoteDuration[]};
 }

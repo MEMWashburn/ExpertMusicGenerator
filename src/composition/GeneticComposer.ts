@@ -3,7 +3,7 @@ import { BitString } from "src/BitString";
 
 export abstract class GeneticComposer implements IComposer {
 
-  private _seed: BitString;
+  _seed: BitString;
 
   constructor(seed?: BitString) {
     this._seed = seed ? seed : new BitString("00000000");
@@ -12,6 +12,3 @@ export abstract class GeneticComposer implements IComposer {
   abstract createMidiData(name?: string): string;
 }
 
-// createMidiData(name?: string): string {
-//   return "";
-// }

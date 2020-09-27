@@ -87,32 +87,40 @@ export class NoteDuration {
     return new NoteDuration(DurationClass.thirtySecond);
   }
 
-  constructor(
-    /**
+  /**
      * Duration class: Whole, half, eighth, etc.
      */
-    private durClass: DurationClass,
+    durationClass: DurationClass;
     /**
      * is this duration actually a triplet?
      */
-    private isTriplet: boolean = false,
+    isTriplet = false;
     /**
      * is this class a dotted, double dotted, triple dotted?
      */
-    private dots: 0 | 1 | 2 | 3 = 0,
+    dots: 0 | 1 | 2 | 3 = 0;
     /**
-     * durationClass can be multiplied for succinctness
-     * for example a NoteDuration with durClass whole and multipleier 5
+     * durationClass can include a multiplier to be succinct
+     * for example a NoteDuration with durationClass.whole and multiplier 5
      * would represent a duration of 5 whole notes (20 quarter notes), etc.
      * will be rounded to nearest whole number
      */
-    private multiplier: number = 1
+    multiplier = 1;
+
+  constructor(
+    durClass: DurationClass,
+    isTriplet: boolean = false,
+    dots: 0 | 1 | 2 | 3 = 0,
+    multiplier: number = 1
   ) {
-    this.multiplier = Math.round(this.multiplier);
+    this.durationClass = durClass;
+    this.isTriplet = isTriplet;
+    this.dots = dots;
+    this.multiplier = Math.round(multiplier);
   }
 
-  public getFraction(withoutMultplier = false): [number, number] {
-    const frac = fractionMap.get(this.durClass);
+  getFraction(withoutMultplier = false): [number, number] {
+    const frac = fractionMap.get(this.durationClass);
     if (!frac) {
       // defaults to whole note
       return [1, 1];
@@ -134,7 +142,7 @@ export class NoteDuration {
     return frac;
   }
 
-  public getValue(withoutMultplier = false): number {
+  getValue(withoutMultplier = false): number {
     const frac = this.getFraction(withoutMultplier);
     return frac[0] / frac[1];
   }

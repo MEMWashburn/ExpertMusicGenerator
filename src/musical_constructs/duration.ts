@@ -1,17 +1,18 @@
 import { EnumLiteralsOf } from "./types";
+import { math as m } from "../util";
 
 // Note Duration Classes
 // base types of note durations
 export type DurationClass = EnumLiteralsOf<typeof DurationClass>;
 export const DurationClass = Object.freeze({
   whole: "whole" as "whole",
-  half: "half" as "half" ,
-  quarter: "quarter" as "quarter" ,
-  eighth: "eighth" as "eighth" ,
-  sixteenth: "sixteenth" as "sixteenth" ,
-  thirtySecond: "thirtySecond" as "thirtySecond" ,
-  sixtyFourth: "sixtyFourth" as "sixtyFourth" ,
-  hundredTwentyEighth: "hundredTwentyEighth" as "hundredTwentyEighth"
+  half: "half" as "half",
+  quarter: "quarter" as "quarter",
+  eighth: "eighth" as "eighth",
+  sixteenth: "sixteenth" as "sixteenth",
+  thirtySecond: "thirtySecond" as "thirtySecond",
+  sixtyFourth: "sixtyFourth" as "sixtyFourth",
+  hundredTwentyEighth: "hundredTwentyEighth" as "hundredTwentyEighth",
 });
 
 const fractionMap = new Map<DurationClass, [number, number]>();
@@ -22,6 +23,16 @@ fractionMap.set(DurationClass.eighth, [1, 8]);
 fractionMap.set(DurationClass.sixteenth, [1, 16]);
 fractionMap.set(DurationClass.thirtySecond, [1, 32]);
 fractionMap.set(DurationClass.sixtyFourth, [1, 64]);
+
+// Takes denominator -> Duration class
+const durationClassMap = new Map<number, DurationClass>();
+durationClassMap.set(1, DurationClass.whole);
+durationClassMap.set(2, DurationClass.half);
+durationClassMap.set(4, DurationClass.quarter);
+durationClassMap.set(8, DurationClass.eighth);
+durationClassMap.set(16, DurationClass.sixteenth);
+durationClassMap.set(32, DurationClass.thirtySecond);
+durationClassMap.set(64, DurationClass.sixtyFourth);
 
 /**
  * Encapsulates note durations and allows the manipulation
@@ -88,24 +99,47 @@ export class NoteDuration {
   }
 
   /**
-     * Duration class: Whole, half, eighth, etc.
-     */
-    durationClass: DurationClass;
-    /**
-     * is this duration actually a triplet?
-     */
-    isTriplet = false;
-    /**
-     * is this class a dotted, double dotted, triple dotted?
-     */
-    dots: 0 | 1 | 2 | 3 = 0;
-    /**
-     * durationClass can include a multiplier to be succinct
-     * for example a NoteDuration with durationClass.whole and multiplier 5
-     * would represent a duration of 5 whole notes (20 quarter notes), etc.
-     * will be rounded to nearest whole number
-     */
-    multiplier = 1;
+   * Duration class: Whole, half, eighth, etc.
+   */
+  durationClass: DurationClass;
+  /**
+   * is this duration actually a triplet?
+   */
+  isTriplet = false;
+  /**
+   * is this class a dotted, double dotted, triple dotted?
+   */
+  dots: 0 | 1 | 2 | 3 = 0;
+  /**
+   * durationClass can include a multiplier to be succinct
+   * for example a NoteDuration with durationClass.whole and multiplier 5
+   * would represent a duration of 5 whole notes (20 quarter notes), etc.
+   * will be rounded to nearest whole number
+   */
+  multiplier = 1;
+
+  static add(
+    a: NoteDuration,
+    b: NoteDuration,
+    ...notes: NoteDuration[]
+  ): NoteDuration | undefined {
+    if (!a && !b) {
+      return undefined;
+    } else if (!b) {
+      return a;
+    }
+    const aF = a.getFraction();
+    const bF = b.getFraction();
+    const sum = m.reduce(aF[0] * bF[1] + bF[0] * aF[1], aF[1] * bF[1]);
+    const durClass = durationClassMap.get(sum[1]);
+    let dur;
+    if (durClass) {
+      dur = new NoteDuration(durClass, false, 0, sum[0]);
+    } else {
+      return undefined;
+    }
+    return NoteDuration.add(dur, notes[0], ...(notes.slice(1)));
+  }
 
   constructor(
     durClass: DurationClass,
@@ -119,11 +153,20 @@ export class NoteDuration {
     this.multiplier = Math.round(multiplier);
   }
 
+  add(
+    a: NoteDuration,
+    ...notes: NoteDuration[]
+  ): NoteDuration | undefined {
+    return NoteDuration.add(this, a, ...notes);
+  }
+
   getFraction(withoutMultplier = false): [number, number] {
-    const frac = fractionMap.get(this.durationClass);
+    let frac = fractionMap.get(this.durationClass);
     if (!frac) {
       // defaults to whole note
       return [1, 1];
+    } else  {
+      frac = [frac[0], frac[1]];
     }
 
     if (this.isTriplet) {
@@ -146,5 +189,4 @@ export class NoteDuration {
     const frac = this.getFraction(withoutMultplier);
     return frac[0] / frac[1];
   }
-
 }

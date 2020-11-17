@@ -1,4 +1,4 @@
-export class NumberGenerator {
+export class    NumberGenerator {
   private useRandom = false;
   private bitIndex = 0;
   private numIndex = 0;
@@ -21,7 +21,7 @@ export class NumberGenerator {
       return Math.random() > 0.5 ? 1 : 0;
     }
     const bit = this.bits[this.bitIndex];
-    this.bitIndex = (this.bitIndex + (jump ? jump : 1)) % this.bits.length;
+    this.bitIndex = (this.bitIndex + (jump ? Math.round(jump) : 1)) % this.bits.length;
     return bit;
   }
 
@@ -31,7 +31,7 @@ export class NumberGenerator {
       return Math.floor(Math.random() * 256);
     }
     const num = this.nums[this.numIndex];
-    this.numIndex = (this.numIndex + (jump ? jump : 1)) % this.nums.length;
+    this.numIndex = (this.numIndex + (jump ? Math.round(jump) : 1)) % this.nums.length;
     return num;
   }
 }
@@ -39,7 +39,17 @@ export class NumberGenerator {
 export class BitString {
   private data: Array<0 | 1> = [];
 
-  // TODO: static function to random generate bitstring
+  /**
+   * get random length bitstring
+   * @param length length in bits
+   */
+  static getRandom(length: number): BitString {
+    const bs = new BitString();
+    for (let i = 0; i < length; i++) {
+      bs.addBit(Math.random() > 0.5 ? 1 : 0);
+    }
+    return bs;
+  }
 
   constructor(str?: string) {
     if (str) {
@@ -143,3 +153,14 @@ export class BitString {
     return new NumberGenerator(this);
   }
 }
+
+// Is the distrubution even
+// const NUMS = 10000;
+// const bs = BitString.getRandom(8 * NUMS);
+// const dist: any = {};
+// bs.toByteArray().forEach(v => {
+//   dist[v] = dist[v] ? dist[v] + 1 : 1;
+// });
+// Object.keys(dist).forEach(v => {
+//   console.log(v + "\t: " + (dist[v] / NUMS * 100).toFixed(2) + "%\t\t| (0.39%)");
+// });

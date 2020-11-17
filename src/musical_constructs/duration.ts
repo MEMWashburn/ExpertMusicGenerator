@@ -97,6 +97,10 @@ export class NoteDuration {
   static get ThirtySecond() {
     return new NoteDuration(DurationClass.thirtySecond);
   }
+  // Useful for arithmetic
+  static get Zero() {
+    return new NoteDuration(DurationClass.whole, false, 0, 0);
+  }
 
   /**
    * Duration class: Whole, half, eighth, etc.
@@ -118,6 +122,15 @@ export class NoteDuration {
    */
   multiplier = 1;
 
+  static fromFraction(frac: [number, number]): NoteDuration | undefined {
+    const durClass = durationClassMap.get(frac[1]);
+    if (durClass) {
+      return new NoteDuration(durClass, false, 0, frac[0]);
+    } else {
+      return undefined;
+    }
+  }
+
   static add(
     a: NoteDuration,
     b: NoteDuration,
@@ -130,15 +143,33 @@ export class NoteDuration {
     }
     const aF = a.getFraction();
     const bF = b.getFraction();
-    const sum = m.reduce(aF[0] * bF[1] + bF[0] * aF[1], aF[1] * bF[1]);
-    const durClass = durationClassMap.get(sum[1]);
-    let dur;
-    if (durClass) {
-      dur = new NoteDuration(durClass, false, 0, sum[0]);
-    } else {
-      return undefined;
+    const sum = m.reduce([aF[0] * bF[1] + bF[0] * aF[1], aF[1] * bF[1]]);
+    const dur = NoteDuration.fromFraction(sum);
+    if (dur) {
+      return NoteDuration.add(dur, notes[0], ...(notes.slice(1)));
     }
-    return NoteDuration.add(dur, notes[0], ...(notes.slice(1)));
+    return undefined;
+  }
+
+  static minus(
+    a: NoteDuration,
+    b: NoteDuration,
+    ...notes: NoteDuration[]
+  ): NoteDuration | undefined {
+    if (!a && !b) {
+      return undefined;
+    } else if (!b) {
+      return a;
+    }
+    const aF = a.getFraction();
+    const bF = b.getFraction();
+    const sum = m.reduce([aF[0] * bF[1] - bF[0] * aF[1], aF[1] * bF[1]]);
+    const durClass = durationClassMap.get(sum[1]);
+    const dur = NoteDuration.fromFraction(sum);
+    if (dur) {
+      return NoteDuration.minus(dur, notes[0], ...(notes.slice(1)));
+    }
+    return undefined;
   }
 
   constructor(
@@ -158,6 +189,13 @@ export class NoteDuration {
     ...notes: NoteDuration[]
   ): NoteDuration | undefined {
     return NoteDuration.add(this, a, ...notes);
+  }
+
+  minus(
+    a: NoteDuration,
+    ...notes: NoteDuration[]
+  ): NoteDuration | undefined {
+    return NoteDuration.minus(this, a, ...notes);
   }
 
   getFraction(withoutMultplier = false): [number, number] {

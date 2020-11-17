@@ -11,23 +11,34 @@ const stringLitArray = <L extends string>(arr: L[]) => arr;
 // contains the 12 unique pitches
 export type PitchClass = EnumLiteralsOf<typeof PitchClass>;
 export const PitchClass = Object.freeze({
-  A: "A" as "A",
-  Ab: "Ab" as "Ab",
-  B: "B" as "B",
-  Bb: "Bb" as "Bb",
   C: "C" as "C",
-  D: "D" as "D",
+  Cs: "C#" as "C#",
   Db: "Db" as "Db",
-  E: "E" as "E",
+  D: "D" as "D",
+  Ds: "D#" as "D#",
   Eb: "Eb" as "Eb",
+  E: "E" as "E",
   F: "F" as "F",
-  G: "G" as "G",
+  Fs: "F#" as "F#",
   Gb: "Gb" as "Gb",
+  G: "G" as "G",
+  Gs: "G#" as "G#",
+  Ab: "Ab" as "Ab",
+  A: "A" as "A",
+  As: "A#" as "A#",
+  Bb: "Bb" as "Bb",
+  B: "B" as "B",
 });
+const ALL_PITCHCLASS: string[] = Object.keys(PitchClass).map(
+  (k) => (PitchClass as any)[k]
+);
+// typecheck
+export const isPitchClass = (p: string): p is PitchClass =>
+  ALL_PITCHCLASS.indexOf(p) !== -1;
 
 // Allowed Octaves
-const octaves = numLitArray([0, 1, 2, 3, 4, 5, 6, 7, 8]);
-export type Octave = (typeof octaves)[number];
+const octaves = numLitArray([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8]);
+export type Octave = typeof octaves[number];
 // typecheck
 export const isOctave = (x: any): x is Octave => octaves.indexOf(x) !== -1;
 
@@ -59,22 +70,11 @@ export const ChurchModes = Object.freeze({
 export type MoreModes = EnumLiteralsOf<typeof MoreModes>;
 export const MoreModes = Object.freeze({
   /** more modes */
-  OtherMode: "other" as "other"
+  OtherMode: "other" as "other",
 });
 
 export type Mode = ChurchModes | MoreModes;
-export const Mode = {...ChurchModes, ...MoreModes};
-
-/** A chord, in music, is any harmonic set of pitches consisting of multiple notes (also called "pitches")
- * that are heard as if sounding simultaneously. */
-export type ChordType = EnumLiteralsOf<typeof ChordType>;
-export const ChordType = Object.freeze({
-  Triad: "triad" as "triad",
-  Seven: "seven" as "seven",
-  Nine: "nine" as "nine",
-  Eleven: "eleven" as "eleven",
-  Thirteen: "thirteen" as "thirteen"
-});
+export const Mode = { ...ChurchModes, ...MoreModes };
 
 export interface Pitch {
   class: PitchClass;
@@ -82,13 +82,19 @@ export interface Pitch {
 }
 
 export interface Mark {
-  pitch: Pitch | Pitch[];
+  pitch: Pitch | Pitch[] | undefined;
+  rest?: boolean;
   duration: NoteDuration;
 }
 
-// let temp: number;
-// temp = Math.random() > 0.5 ? 1 : 23;
-// let myOctave: Octave;
-// if (isOctave(temp)) {
-//   myOctave = temp;
-// }
+export interface TimeSignature {
+  numerator: number;
+  denominator: number;
+  bpm: number;
+}
+
+export interface ChordInfo {
+  tonic: PitchClass;
+  type: string; // tonaljs acceptable chord type, if invalid defaults to triad
+  inversion: number; // if invalide defaults to none
+}

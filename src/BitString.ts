@@ -1,4 +1,4 @@
-export class NumberGenerator {
+export class    NumberGenerator {
   private useRandom = false;
   private bitIndex = 0;
   private numIndex = 0;
@@ -21,7 +21,7 @@ export class NumberGenerator {
       return Math.random() > 0.5 ? 1 : 0;
     }
     const bit = this.bits[this.bitIndex];
-    this.bitIndex = (this.bitIndex + (jump ? jump : 1)) % this.bits.length;
+    this.bitIndex = (this.bitIndex + (jump ? Math.round(jump) : 1)) % this.bits.length;
     return bit;
   }
 
@@ -31,13 +31,25 @@ export class NumberGenerator {
       return Math.floor(Math.random() * 256);
     }
     const num = this.nums[this.numIndex];
-    this.numIndex = (this.numIndex + (jump ? jump : 1)) % this.nums.length;
+    this.numIndex = (this.numIndex + (jump ? Math.round(jump) : 1)) % this.nums.length;
     return num;
   }
 }
 
 export class BitString {
   private data: Array<0 | 1> = [];
+
+  /**
+   * get random length bitstring
+   * @param length length in bits
+   */
+  static getRandom(length: number): BitString {
+    const bs = new BitString();
+    for (let i = 0; i < length; i++) {
+      bs.addBit(Math.random() > 0.5 ? 1 : 0);
+    }
+    return bs;
+  }
 
   constructor(str?: string) {
     if (str) {
@@ -50,7 +62,7 @@ export class BitString {
    */
   public mutate(mutationChance: number) {
     if (mutationChance < 0 || mutationChance > 1) {
-      throw new Error('Mutation chance is not a valid probability');
+      throw new Error("Mutation chance is not a valid probability");
     }
     for (let i = 0; i < this.data.length; i++) {
       if (Math.random() < mutationChance) {
@@ -69,7 +81,7 @@ export class BitString {
   public crossover(bitstring: BitString, points: number = 1) {
     const size = Math.min(bitstring.data.length, this.data.length);
     if (points < 1 || points >= size) {
-      throw new Error('Invalid number of crossover points');
+      throw new Error("Invalid number of crossover points");
     }
 
     const crossoverPoints = new Set<number>();
@@ -98,7 +110,7 @@ export class BitString {
 
 
   public toString() {
-    return this.data.map(bit => bit.toString()).join('');
+    return this.data.map(bit => bit.toString()).join("");
   }
 
   public addBit(bit: 0 | 1) {
@@ -108,9 +120,9 @@ export class BitString {
   public fromString(str: string) {
     this.data = [];
     for (const char of str) {
-      if (char === '1') {
+      if (char === "1") {
         this.data.push(1);
-      } else if (char === '0') {
+      } else if (char === "0") {
         this.data.push(0);
       }
     }
@@ -141,3 +153,14 @@ export class BitString {
     return new NumberGenerator(this);
   }
 }
+
+// Is the distrubution even
+// const NUMS = 10000;
+// const bs = BitString.getRandom(8 * NUMS);
+// const dist: any = {};
+// bs.toByteArray().forEach(v => {
+//   dist[v] = dist[v] ? dist[v] + 1 : 1;
+// });
+// Object.keys(dist).forEach(v => {
+//   console.log(v + "\t: " + (dist[v] / NUMS * 100).toFixed(2) + "%\t\t| (0.39%)");
+// });

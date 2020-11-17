@@ -1,4 +1,4 @@
-import { Chord, Note } from "@tonaljs/tonal";
+import { Chord, Mode, ChordType, distance, note } from "@tonaljs/tonal";
 import {
   Pitch,
   Octave,
@@ -12,17 +12,20 @@ import * as convertPitch from "./pitch";
 function _toChordObj(chord: ChordInfo) {
   let chordObj = Chord.getChord(chord.type, chord.tonic);
   if (chordObj.empty) {
-    chordObj = Chord.getChord("triad", chord.tonic);
+    chordObj = Chord.getChord("", chord.tonic);
   }
   const invert =
     chord.inversion >= 0 && chord.inversion < chordObj.notes.length
       ? chord.inversion
       : 0;
   const real = Chord.getChord(
-    chordObj.type,
+    chordObj.aliases[0],
     chordObj.tonic as any,
     chordObj.notes[invert]
   );
+  if (real.empty) {
+    throw new Error("Could not convert ChordInfo into Tonal: ChordObject");
+  }
   return real;
 }
 
@@ -33,8 +36,12 @@ export class To {
     let failed = false;
     let notes = [];
     if (isOctave(octave)) {
-      chord.tonic += "" + octave;
-      const chordObj = _toChordObj(chord);
+      const tonic = chord.tonic + octave;
+      const chordObj = _toChordObj({
+        tonic: tonic as any,
+        type: chord.type,
+        inversion: chord.inversion,
+      });
       notes = chordObj.notes.map((n) => {
         const p = convertPitch.From.String(n);
         failed = failed || p === undefined;
@@ -72,7 +79,7 @@ export class From {
   static String(chordSymbol: string): ChordInfo | undefined {
     const p = chordSymbol.trim().split("/");
     const c = Chord.get(p[0]);
-    const real = Chord.getChord(c.type, c.tonic as any, p[1]);
+    const real = Chord.getChord(c.aliases[0], c.tonic as any, p[1]);
     if (!real.empty) {
       return {
         tonic: real.tonic as any,
@@ -83,3 +90,19 @@ export class From {
     return undefined;
   }
 }
+
+// const struct = {
+//   num: 2,
+//   keySig: {
+//     tonic: "C#",
+//     mode: "dorian"
+//   }
+// };
+// const chordNum = struct.num - 1;
+// const triad = Mode.triads(struct.keySig.mode, struct.keySig.tonic)[chordNum];
+// const seven = Mode.seventhChords(struct.keySig.mode, struct.keySig.tonic)[
+//   chordNum
+// ];
+// const eleven = Chord.extended(seven)[0];
+// console.log(triad, seven, eleven);
+// console.log(Chord.getChord("m7add11", "F#", "E").tonic);

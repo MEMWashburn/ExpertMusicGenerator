@@ -146,13 +146,22 @@ function generateRules(mode: Mode) {
 }
 
 function decideToInterchange(mode: Mode, comp: PhenoComposer): Mode {
-  return mode;
+  const chance = comp.data.gen.getPercent("interchange");
+  let newMode = mode;
+  if (chance < 0.07) {
+    newMode = comp.data.modeChoice.second;
+  } else if (chance < 0.11) {
+    newMode = comp.data.modeChoice.third;
+  }
+
+  return newMode ? newMode : mode;
 }
 
 const INV_WEIGHTS = [2, 4, 4, 1, 2];
 
 function decideInversion(max: number, choice: number) {
   const dist: { [key: number]: number } = {};
+  max = Math.min(max, 4);
   let sum = 0;
   for (let i = 0; i < max; i++) {
     const w = INV_WEIGHTS[i] ? INV_WEIGHTS[i] : 1;
@@ -171,23 +180,21 @@ function decideInversion(max: number, choice: number) {
 
 function decideChordInfo(struct: ChordStruct, comp: PhenoComposer): ChordInfo {
   const chordNum = struct.num - 1;
-  const choice = comp.data.gen.getNum("chord_info") % 3;
+  const choice = comp.data.gen.getNum("chord_info") % 2;
   const triad = tMode.triads(struct.keySig.mode, struct.keySig.tonic)[chordNum];
   const seven = tMode.seventhChords(struct.keySig.mode, struct.keySig.tonic)[
     chordNum
   ];
-  const eleven = tChord.extended(seven)[0];
+  // const eleven = tChord.extended(seven)[0];
 
   const chordInfo: ChordInfo = Convert.Chord.From.String(
-    [triad, seven, eleven][choice]
+    [triad, seven][choice]
   ) as ChordInfo;
 
-  console.log("choice before invert: ", chordInfo);
   chordInfo.inversion = decideInversion(
     Convert.Chord.To.Notes(chordInfo).length,
     comp.data.gen.getPercent("chord_info")
   );
-  console.log("creating: ", struct, " -> ", chordInfo);
   return chordInfo;
 }
 
@@ -224,7 +231,7 @@ function createChordDirs(forms: string[], comp: PhenoComposer) {
   const chordDirs: { [key: string]: ChordDirective[] } = {};
   for (const form of forms) {
     if (!chordDirs[form]) {
-      const chordSeq = g.eval();
+      const chordSeq = g.eval("#closed#");
       const chords: ChordStruct[] = [];
       for (const numeral of chordSeq.split(/\s+/)) {
         const chord: ChordStruct = {
@@ -248,6 +255,7 @@ const RNG_MAP: { [key: string]: number } = {
   tonic: 3,
   chord_struct: 5,
   chord_info: 7,
+  interchange: 13,
 };
 
 // converts genome to Composition (the phenotype)

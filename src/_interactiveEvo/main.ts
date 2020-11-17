@@ -9,7 +9,8 @@ import { Genome, toComposition1 } from "./geneticRepMixed";
 const player = new MusicPlayerService();
 (window as any).player = player;
 
-const genome = new Genome();
+const def_genome = new Genome();
+(window as any).gen = def_genome;
 
 // Testing composition
 const comp = new PhenoComposer();
@@ -90,7 +91,10 @@ window.onload = () => {
           (document as any).querySelector("#Valence").value
         );
 
-        const gComp = toComposition1({ arousal, valence, gen: genome });
+        let gen = (window as any).gen;
+        gen = gen ? gen : def_genome;
+
+        const gComp = toComposition1({ arousal, valence, gen });
         if (gComp) {
           curSong = {
             name: "genetic song",

@@ -37,7 +37,9 @@ export class ChordSection implements ISection {
     if (!this._cache) {
       this._cache = {
         bass: chordsToBass1(this._chordD),
-        harmony: chordsToHarmony1(this._chordD, data["context"]),
+        harmony: chordsToHarmony1(this._chordD, data["context"], () => {
+          return data["gen"].getPercent("harmony");
+        }),
         melody: chordsToMelody1(this._chordD),
       };
     }

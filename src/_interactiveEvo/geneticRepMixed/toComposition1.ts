@@ -255,7 +255,8 @@ const RNG_MAP: { [key: string]: number } = {
   tonic: 3,
   chord_struct: 5,
   chord_info: 7,
-  interchange: 13,
+  interchange: 11,
+  harmony: 11,
 };
 
 // converts genome to Composition (the phenotype)

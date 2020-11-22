@@ -25,6 +25,9 @@ export class Genome {
 
   getBit(key = ""): 0 | 1 {
     let rng = this._rngMap[key];
+    if (rng) {
+      console.log("[Genome] using key: " + key + " for RNG(bit)");
+    }
     rng = rng ? rng : this._defaultRng;
     let jump = this._jumpMap[key];
     jump = jump ? jump : 1;
@@ -33,6 +36,9 @@ export class Genome {
 
   getNum(key = ""): number {
     let rng = this._rngMap[key];
+    if (rng) {
+      console.log("[Genome] using key: " + key + " for RNG(byte)");
+    }
     rng = rng ? rng : this._defaultRng;
     let jump = this._jumpMap[key];
     jump = jump ? jump : 1;

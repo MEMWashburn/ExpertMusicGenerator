@@ -29,6 +29,7 @@ export const PitchClass = Object.freeze({
   Bb: "Bb" as "Bb",
   B: "B" as "B",
 });
+//TODO test if this works: Object.values(PitchClass) 
 const ALL_PITCHCLASS: string[] = Object.keys(PitchClass).map(
   (k) => (PitchClass as any)[k]
 );
@@ -96,5 +97,5 @@ export interface TimeSignature {
 export interface ChordInfo {
   tonic: PitchClass;
   type: string; // tonaljs acceptable chord type, if invalid defaults to triad
-  inversion: number; // if invalide defaults to none
+  inversion: number; // if invalid defaults to none
 }

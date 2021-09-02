@@ -107,7 +107,7 @@ export class NoteDuration {
    */
   durationClass: DurationClass;
   /**
-   * is this duration actually a triplet?
+   * is this duration a triplet?
    */
   isTriplet = false;
   /**
@@ -122,6 +122,7 @@ export class NoteDuration {
    */
   multiplier = 1;
 
+  //TODO: this does not work for everything
   static fromFraction(frac: [number, number]): NoteDuration | undefined {
     const durClass = durationClassMap.get(frac[1]);
     if (durClass) {
@@ -203,8 +204,9 @@ export class NoteDuration {
     if (!frac) {
       // defaults to whole note
       return [1, 1];
-    } else  {
-      frac = [frac[0], frac[1]];
+    } else {
+      // copy fraction from map
+      frac = [...frac];
     }
 
     if (this.isTriplet) {

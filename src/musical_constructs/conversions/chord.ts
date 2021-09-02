@@ -24,6 +24,7 @@ function _toChordObj(chord: ChordInfo) {
     chordObj.notes[invert]
   );
   if (real.empty) {
+    console.log(chord, chordObj, real);
     throw new Error("Could not convert ChordInfo into Tonal: ChordObject");
   }
   return real;

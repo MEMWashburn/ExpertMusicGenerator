@@ -1,5 +1,4 @@
 import { MusicPlayerService } from "./musicPlayerService";
-import { BitString } from "../BitString";
 import { Mark, Pitch, NoteDuration } from "../musical_constructs";
 import { DummySection } from "./section/dummySection";
 import { PhenoComposer } from "./phenoComposer";
@@ -77,34 +76,33 @@ const song = {
 let curSong = song;
 
 window.onload = () => {
-  const context = new AudioContext();
   // One-liner to resume playback when user interacted with the page.
   (document as any)
     .querySelector("#play_button")
-    .addEventListener("click", () => {
-      context.resume().then(() => {
-        console.log("Playback resumed successfully");
-        const arousal = parseFloat(
-          (document as any).querySelector("#Arousal").value
-        );
-        const valence = parseFloat(
-          (document as any).querySelector("#Valence").value
-        );
+    .addEventListener("click", async () => {
+      await player.initialize();
+      const arousal = parseFloat(
+        (document as any).querySelector("#Arousal").value
+      );
+      const valence = parseFloat(
+        (document as any).querySelector("#Valence").value
+      );
 
-        let gen = (window as any).gen;
-        gen = gen ? gen : def_genome;
+      let gen = (window as any).gen;
+      gen = gen ? gen : def_genome;
 
-        const gComp = toComposition1({ arousal, valence, gen });
-        if (gComp) {
-          curSong = {
-            name: "genetic song",
-            compRef: gComp,
-            base64: gComp.createMidiData("genetic song"),
-          };
-          (window as any).curSong = curSong;
-          player.playSong(curSong);
-        }
-      });
+      const gComp = toComposition1({ arousal, valence, gen });
+      if (gComp) {
+        curSong = {
+          name: "genetic song",
+          compRef: gComp,
+          base64: gComp.createMidiData("genetic song"),
+        };
+        (window as any).curSong = curSong;
+        player.playSong(curSong).catch(e => {
+          console.log(e);
+        });
+      }
     });
   (document as any)
     .querySelector("#stop_button")

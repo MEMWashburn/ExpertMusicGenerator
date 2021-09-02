@@ -10,23 +10,33 @@ import {
 import { Scale } from "@tonaljs/tonal";
 import { Track, NoteEvent, ProgramChangeEvent, Writer } from "midi-writer-js";
 
+declare module "midi-writer-js" {
+  interface Track {
+    setKeySignature: (sf: string, mi: number) => void;
+  }
+}
+
 // Converts music constructs to equivalents for github.com/grimmdude/MidiWriterJS
 
+const TICK_RESOLUTION = 128;
+
 export function toDuration(dur: NoteDuration): string {
-  return "t" + Math.round(dur.getValue() * 4 * 128);
+  return "t" + Math.round(dur.getValue() * 4 * TICK_RESOLUTION);
 }
 
 export function toPitch(pitch: Pitch): string {
   return pitch.class + pitch.octave;
 }
 
-function _markToNoteEvent(mark: Mark): NoteEvent | undefined {
+
+
+function _markToNoteEvent(mark: Mark): NoteEvent {
   if (mark.rest) {
     // Is a rest
     return new NoteEvent({
       pitch: "C4", // <- we don't care
-      duration: "0",
-      wait: toDuration(mark.duration),
+      duration: "0" as any,
+      wait: toDuration(mark.duration) as any,
       velocity: 0, // <- just in case
     });
   } else if (mark.pitch) {
@@ -34,14 +44,14 @@ function _markToNoteEvent(mark: Mark): NoteEvent | undefined {
     return new NoteEvent({
       pitch: Array.isArray(mark.pitch)
         ? mark.pitch.map((p) => toPitch(p))
-        : toPitch(mark.pitch),
-      duration: toDuration(mark.duration),
+        : toPitch(mark.pitch) as any,
+      duration: toDuration(mark.duration) as any,
       velocity: 100,
     });
   } // Other?
 
-  // never reach
-  return undefined;
+  // Throw error if failed to parse
+  throw new Error("Unable to parse Mark");
 }
 
 function _addMarks(track: Track, channel: number, marks: Mark[]) {
@@ -74,7 +84,7 @@ export function createBase64Midi(
       metaData.tonic + " " + metaData.mode
     )) {
       if (scales[1] === "major") {
-        dataTrack.setKeySignature(scales[0], undefined);
+        dataTrack.setKeySignature(scales[0], 0);
         break;
       }
     }
@@ -105,7 +115,6 @@ export function createBase64Midi(
             : 0,
       })
     );
-    console.log(`adding voice: ${voice} `, marks[voice]);
     _addMarks(track, channelNum, marks[voice]);
     channels.push(track);
   }

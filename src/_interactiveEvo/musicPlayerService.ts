@@ -1,9 +1,8 @@
 import * as Tone from "tone";
+import * as Soundfont from "soundfont-player";
 import { base64ToUInt8Array } from "../util";
 import { GMInstruments } from "../musical_constructs";
 import { IComposer } from "../composition";
-
-const Soundfont = require("soundfont-player");
 
 const Midi = require("@tonejs/midi").Midi;
 
@@ -16,11 +15,21 @@ export interface Song {
 export class MusicPlayerService {
   private currentClip?: any;
   private playing?: Song;
-  private synths: Tone.Instrument[];
+  private synths: Tone.Sampler[];
+  private _soundfontContext: AudioContext;
   private instrumentBuffers = new Map<string, any>();
+  private _initialized = false;
 
   constructor() {
     this.synths = [];
+    this._soundfontContext = new AudioContext();
+  }
+
+  public async initialize() {
+    if (!this._initialized) {
+      await Tone.start();
+      this._initialized = true;
+    }
   }
 
   /** Returns the song that is currently playing, or undefined if there is no song playing */
@@ -45,13 +54,8 @@ export class MusicPlayerService {
     if (existing) {
       return new Tone.Sampler(existing);
     }
-    const context = (Tone as any).context;
-    const instrument = await new Promise<any>((resolve) =>
-      Soundfont.instrument(context, name).then((instr: any) => {
-        console.log("Found " + name + " synth!");
-        resolve(instr);
-      })
-    );
+    const instrument: any = await Soundfont.instrument(this._soundfontContext, name as any);
+
     return new Tone.Sampler(instrument.buffers);
   }
 
@@ -85,7 +89,7 @@ export class MusicPlayerService {
       }
       synth.volume.value = 10.0;
 
-      synth.toMaster();
+      synth.toDestination();
       synth.sync();
       this.synths.push(synth);
 

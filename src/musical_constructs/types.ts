@@ -29,10 +29,9 @@ export const PitchClass = Object.freeze({
   Bb: "Bb" as "Bb",
   B: "B" as "B",
 });
-//TODO test if this works: Object.values(PitchClass) 
-const ALL_PITCHCLASS: string[] = Object.keys(PitchClass).map(
-  (k) => (PitchClass as any)[k]
-);
+
+const ALL_PITCHCLASS: string[] = Object.values(PitchClass);
+
 // typecheck
 export const isPitchClass = (p: string): p is PitchClass =>
   ALL_PITCHCLASS.indexOf(p) !== -1;
@@ -41,9 +40,9 @@ export const isPitchClass = (p: string): p is PitchClass =>
 const octaves = numLitArray([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8]);
 export type Octave = typeof octaves[number];
 // typecheck
-export const isOctave = (x: any): x is Octave => octaves.indexOf(x) !== -1;
+export const isOctave = (x: number): x is Octave => octaves.indexOf(x as any) !== -1;
 
-// Modes
+// #region "Modes"
 export type ChurchModes = EnumLiteralsOf<typeof ChurchModes>;
 export const ChurchModes = Object.freeze({
   /** (intervals: Whole - Whole - Half - Whole - Whole - Whole - Half) */
@@ -68,14 +67,18 @@ export const ChurchModes = Object.freeze({
   Locrian: "locrian" as "locrian",
 });
 
-export type MoreModes = EnumLiteralsOf<typeof MoreModes>;
-export const MoreModes = Object.freeze({
-  /** more modes */
-  OtherMode: "other" as "other",
-});
+// == Copy this for another category of modes ==
+// export type MoreModes = EnumLiteralsOf<typeof MoreModes>;
+// export const MoreModes = Object.freeze({
+//   /** more modes */
+//   OtherMode: "other" as "other",
+// });
 
-export type Mode = ChurchModes | MoreModes;
-export const Mode = { ...ChurchModes, ...MoreModes };
+// All modes
+export type Mode = ChurchModes;
+export const Mode = { ...ChurchModes };
+
+// #endregion
 
 export interface Pitch {
   class: PitchClass;

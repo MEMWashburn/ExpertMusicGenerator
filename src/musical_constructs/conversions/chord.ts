@@ -10,9 +10,9 @@ import {
 import * as convertPitch from "./pitch";
 
 function _toChordObj(chord: ChordInfo) {
-  let chordObj = Chord.getChord(chord.type, chord.tonic);
+  let chordObj = Chord.getChord(chord.type, chord.root);
   if (chordObj.empty) {
-    chordObj = Chord.getChord("", chord.tonic);
+    chordObj = Chord.getChord("", chord.root);
   }
   const invert =
     chord.inversion >= 0 && chord.inversion < chordObj.notes.length
@@ -37,9 +37,9 @@ export class To {
     let failed = false;
     let notes = [];
     if (isOctave(octave)) {
-      const tonic = chord.tonic + octave;
+      const tonic = chord.root + octave;
       const chordObj = _toChordObj({
-        tonic: tonic as any,
+        root: tonic as any,
         type: chord.type,
         inversion: chord.inversion,
       });
@@ -57,7 +57,7 @@ export class To {
     }
 
     if (failed) {
-      throw new Error("Failed to convert chord info to notes");
+      throw new Error("Failed to convert ChordInfo to notes");
     }
     return notes as any;
   }
@@ -83,7 +83,7 @@ export class From {
     const real = Chord.getChord(c.aliases[0], c.tonic as any, p[1]);
     if (!real.empty) {
       return {
-        tonic: real.tonic as any,
+        root: real.tonic as any,
         type: real.aliases[0],
         inversion: real.rootDegree ? real.rootDegree - 1 : 0,
       };

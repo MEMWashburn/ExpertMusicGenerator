@@ -40,7 +40,7 @@ export const isPitchClass = (p: string): p is PitchClass =>
 const octaves = numLitArray([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8]);
 export type Octave = typeof octaves[number];
 // typecheck
-export const isOctave = (x: number): x is Octave => octaves.indexOf(x as any) !== -1;
+export const isOctave = (x?: number): x is Octave => octaves.indexOf(x as any) !== -1;
 
 // #region "Modes"
 export type ChurchModes = EnumLiteralsOf<typeof ChurchModes>;
@@ -98,7 +98,10 @@ export interface TimeSignature {
 }
 
 export interface ChordInfo {
-  tonic: PitchClass;
-  type: string; // tonaljs acceptable chord type, if invalid defaults to triad
-  inversion: number; // if invalid defaults to none
+  /** Root note of the chord */
+  root: PitchClass;
+  /** Tonal acceptable chord type, if invalid defaults to triad */
+  type: string;
+  /** If invalid, defaults to 0 (no inversion) */
+  inversion: number;
 }
